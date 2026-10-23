@@ -118,3 +118,5 @@ dist
 .pnp.*
 
 # End of https://mrkandreev.name/snippets/gitignore-generator/#Nodea
+
+commit_plan.txt
