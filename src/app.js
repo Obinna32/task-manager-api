@@ -4,6 +4,8 @@ const helmet = require("helmet");
 const morgan =require("morgan");
 const mongoose = require("mongoose");
 const { env } = require("./config/env");
+const AppError = require("./utils/AppError");
+const globalErrorHandler = require("./middleware/error");
 
 const app = express();
 
@@ -23,5 +25,11 @@ app.get('/health', (req,res)=> {
         dbState: mongoose.connection.readyState
     });
 });
+
+app.use((req,res,next) => {
+    next(new AppError(`Cant find ${req.originalUrl} on this server`, 404));
+});
+
+app.use(globalErrorHandler);
 
 module.exports = app;
