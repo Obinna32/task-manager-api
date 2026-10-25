@@ -6,6 +6,6 @@ const router = express.Router();
 
 router.use(protect);
 
-router.route("/").post(taskController.createTask);
+router.route("/").get(taskController.getAllTasks).post(taskController.createTask);
 
 module.exports = router;
