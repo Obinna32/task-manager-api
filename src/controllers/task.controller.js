@@ -20,3 +20,13 @@ exports.getAllTasks = catchAsync(async (req, res, next) => {
 
     res.status(200).json({ status: "success", results: tasks.length, data: {tasks}});
 });
+
+exports.getTask = catchAsync(async (req, res, next) => {
+    const task = await Task.findOne({ _id: req.params.id, owner: req.user._id});
+
+    if (!task){
+        return next(new AppError('No task found with that ID', 404));
+    }
+
+    res.status(200).json({ status: 'success', data: { task }});
+});

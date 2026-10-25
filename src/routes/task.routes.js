@@ -8,4 +8,6 @@ router.use(protect);
 
 router.route("/").get(taskController.getAllTasks).post(taskController.createTask);
 
+router.route("/:id").get(taskController.getTask);
+
 module.exports = router;
