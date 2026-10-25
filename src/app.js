@@ -6,6 +6,7 @@ const mongoose = require("mongoose");
 const { env } = require("./config/env");
 const AppError = require("./utils/AppError");
 const globalErrorHandler = require("./middleware/error");
+const authRouter = require("./routes/auth.routes");
 
 const app = express();
 
@@ -25,6 +26,9 @@ app.get('/health', (req,res)=> {
         dbState: mongoose.connection.readyState
     });
 });
+
+
+app.use("/api/v1/auth", authRouter);
 
 app.use((req,res,next) => {
     next(new AppError(`Cant find ${req.originalUrl} on this server`, 404));
