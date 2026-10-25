@@ -7,6 +7,7 @@ const { env } = require("./config/env");
 const AppError = require("./utils/AppError");
 const globalErrorHandler = require("./middleware/error");
 const authRouter = require("./routes/auth.routes");
+const taskRouter = require("./routes/task.routes");
 
 const app = express();
 
@@ -29,6 +30,7 @@ app.get('/health', (req,res)=> {
 
 
 app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/tasks", taskRouter);
 
 app.use((req,res,next) => {
     next(new AppError(`Cant find ${req.originalUrl} on this server`, 404));
