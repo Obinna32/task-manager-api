@@ -3,6 +3,7 @@ const cors = require("cors");
 const helmet = require("helmet");
 const morgan =require("morgan");
 const mongoose = require("mongoose");
+const mongoSanitize = require('express-mongo-sanitize');
 const { env } = require("./config/env");
 const AppError = require("./utils/AppError");
 const globalErrorHandler = require("./middleware/error");
@@ -14,6 +15,8 @@ const app = express();
 app.use(helmet());
 app.use(cors());
 app.use(express.json({limit: '10kb'}));
+
+app.use(mongoSanitize());
 
 if (env.NODE_ENV === "development"){
     app.use(morgan('dev'));
