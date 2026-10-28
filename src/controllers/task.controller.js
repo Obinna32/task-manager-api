@@ -66,3 +66,55 @@ exports.deleteTask = catchAsync(async(req, res, next) => {
 
     res.status(200).json({status: "success", data: null})
 })
+
+exports.getTaskStats = catchAsync(async (req, res, next) => {
+    const stats = await Task.aggregate([
+        {
+        $match: { owner: req.user._id },
+        },
+        {
+        $facet: {
+            statusCounts: [
+                { $group: { _id: '$status', count: { $sum: 1 } } },
+            ],
+            priorityCounts: [
+                { $group: { _id: '$priority', count: { $sum: 1 } } },
+            ],
+            overdueCount: [
+                {
+                    $match: {
+                    dueDate: { $lt: new Date() },
+                    status: { $ne: 'done' },
+                    },
+                },
+            { $count: 'count' },
+            ],
+            totalTasks: [{ $count: 'count' }],
+            completedTasks: [
+            { $match: { status: 'done' } },
+            { $count: 'count' },
+            ],
+            },
+        },
+    ]);
+
+    const result = stats[0];
+    const total = result.totalTasks[0]?.count || 0;
+    const completed = result.completedTasks[0]?.count || 0;
+    const completionRate = total > 0 ? ((completed / total) * 100).toFixed(2) + '%' : '0%';
+    const overdue = result.overdueCount[0]?.count || 0;
+
+    res.status(200).json({
+        status: 'success',
+        data: {
+        stats: {
+            total,
+            completed,
+            completionRate,
+            overdue,
+            byStatus: result.statusCounts,
+            byPriority: result.priorityCounts,
+        },
+        },
+    });
+});
