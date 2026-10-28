@@ -47,3 +47,24 @@ exports.login = catchAsync(async (req, res, next) => {
 exports.getMe = (req, res, next) => {
     res.status(200).json({status: 'success', data: { user: req.user}});
 };
+
+exports.updatePassword = catchAsync(async (req, res, next) => {
+    const {currentPassword, newPassword} = req.body;
+
+    if (!currentPassword || !newPassword){
+        return next(new AppError('Please provide both current and new passwords', 400));
+    }
+
+    const user = await User.findById(req.user._id).select('+password');
+
+    if (!(await user.comparePassword(currentPassword, user.password))){
+        return next(new AppError('Your current password is incorrect', 401));
+    }
+
+    user.password = newPassword;
+    await user.save();
+
+    const token = signToken(user._id);
+
+    res.status(200).json({ status: 'success', token, message: 'Password updated successfully'});
+});
