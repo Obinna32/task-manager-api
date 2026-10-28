@@ -1,0 +1,26 @@
+const validate = (schema) => (req, res, next) => {
+    const result = schema.safeParse({
+        body: req.body,
+        query: req.query,
+        params: req.params,
+    });
+
+    if (!result.success) {
+        const errors = result.error.errors.map((err) => ({
+        field: err.path.join('.'),
+        message: err.message,
+    }));
+
+    return res.status(400).json({
+        status: 'fail',
+        message: 'Invalid input data',
+        errors,
+    })
+}
+
+  // Attach validated data back to request
+    req.body = result.data.body;
+    next();
+};
+
+module.exports = validate;
