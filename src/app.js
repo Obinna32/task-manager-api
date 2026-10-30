@@ -1,3 +1,8 @@
+const swaggerUi = require("swagger-ui-express");
+const YAML = require("yamljs");
+const path = require('path');
+const swaggerDocument = YAML.load(path.join(__dirname, '../docs/swagger.yaml'));
+
 const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
@@ -38,6 +43,8 @@ app.use("/api/v1/tasks", taskRouter);
 app.use((req,res,next) => {
     next(new AppError(`Cant find ${req.originalUrl} on this server`, 404));
 });
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use(globalErrorHandler);
 
