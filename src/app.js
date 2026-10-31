@@ -19,6 +19,20 @@ const app = express();
 
 app.use(helmet());
 app.use(cors());
+
+console.log(swaggerDocument)
+
+app.use((req, res, next) => {
+    Object.defineProperty(req, 'query', {
+        value: req.query,
+        writable: true,
+        configurable: true,
+        enumerable: true,
+    });
+    next();
+});
+
+
 app.use(express.json({limit: '10kb'}));
 
 app.use(mongoSanitize());
@@ -40,11 +54,12 @@ app.get('/health', (req,res)=> {
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/tasks", taskRouter);
 
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
 app.use((req,res,next) => {
     next(new AppError(`Cant find ${req.originalUrl} on this server`, 404));
 });
-
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use(globalErrorHandler);
 

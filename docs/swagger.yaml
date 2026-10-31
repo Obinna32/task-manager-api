@@ -1,0 +1,76 @@
+openapi: 3.0.3
+info:
+  title: Task Manager REST API
+  description: Production-ready task management API built with Node.js, Express, and MongoDB.
+  version: 1.0.0
+servers:
+  - url: http://localhost:5000/api/v1
+    description: Local Development Server
+paths:
+  /health:
+    servers:
+      - url: http://localhost:5000
+        description: Root server
+    get:
+      summary: System health check
+      responses:
+        '200':
+          description: Server is healthy and database is connected
+  /auth/register:
+    post:
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: objct
+              required:
+                - name
+                - email
+                - password
+              properties:
+                name:
+                  type: string
+                  example: Obinna Ekwealor
+                email:
+                  type: string
+                  example: obinna@example.com
+                password:
+                  type: string
+                  example: password123
+      responses:
+        '201':
+          description: User registered successfully
+        '409':
+          description: Email already exists
+  /auth/login:
+    post:
+      summary: Log in an existing user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  example: obinna@example.com
+                password:
+                  type: string
+                  example: password123
+      responses:
+        '200':
+          description: Login successful, returns JWT token
+        '401':
+          description: Incorrect email or password
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

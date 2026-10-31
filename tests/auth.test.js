@@ -11,11 +11,13 @@ beforeAll(async () => {
     mongoServer = await MongoMemoryServer.create();
     const uri = mongoServer.getUri();
     await mongoose.connect(uri);
-});
+}, 60000);
 
 afterAll(async () => {
     await mongoose.disconnect();
+    if (mongoServer) {
     await mongoServer.stop();
+    }
 });
 
 afterEach(async() => {
